@@ -1,30 +1,33 @@
+# Use an official Python runtime as a parent image
 FROM python:3.9-slim
 
-RUN apt-get update && \
-apt-get install -y git && \
-apt-get install git-lfs -y && \
-apt-get install -y libgl1-mesa-glx && \
-apt-get install -y libglib2.0-0 && \
-apt-get clean
+# Set the working directory in the container
+WORKDIR /app
 
-RUN git lfs install
+# Install system dependencies (for some Python packages like OpenCV, etc.)
+RUN apt-get update && apt-get install -y \
+    libglib2.0-0 \
+    libgl1 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Clone mã nguồn từ GitHub
+# Copy dependency file and install Python packages
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-RUN git clone https://github.com/nguyenmai333/smarthoctAp.git /smarthoctAp
-WORKDIR /smarthoctAp/server/modules/pretrain_models
-RUN git clone  https://huggingface.co/vinai/PhoWhisper-small PhoWhisper-small
-WORKDIR /smarthoctAp/server
-# Cài đặt các yêu cầu từ requirements.txt
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
-RUN python -m spacy download en_core_web_sm 
-RUN pip install -U "huggingface_hub[cli]"
-RUN huggingface-cli download facebook/bart-large-cnn --cache-dir /modules/pretrain_models
-RUN huggingface-cli download deepset/roberta-base-squad2 --cache-dir /modules/pretrain_models
-RUN huggingface-cli download vinai/phobert-base --cache-dir /modules/pretrain_models
-RUN huggingface-cli download VietAI/envit5-translation --cache-dir /modules/pretrain_models
-RUN huggingface-cli download google-bert/bert-base-uncased --cache-dir /modules/pretrain_models
+# Copy source code
+COPY . .
 
-# Chạy ứng dụng chính
-CMD ["python", "main.py"]
+# Set environment variables (OPTIONAL - Cloud Run can override these)
+ENV MODULE_NAME="main"
+ENV VARIABLE_NAME="app"
+ENV APP_MODULE="${MODULE_NAME}:${VARIABLE_NAME}"
+
+# Cloud Run expects the app to listen on PORT=8080
+ENV PORT=8080
+
+# Expose port 8080 (required by Cloud Run)
+EXPOSE 8080
+
+# Start the server using uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]

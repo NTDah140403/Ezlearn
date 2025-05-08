@@ -34,7 +34,6 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from modules.services.loader import llm
 from modules.schemas.user import TextRequest,mcqOb
-from langdetect import detect
 router = APIRouter()
 
 @router.post("/seq2mcq")
@@ -56,4 +55,4 @@ async def get_seq2mcq(TEXT: TextRequest):
 
     chain = prompt | llm | parser
 
-    return  chain.invoke({"content": TEXT.text, "output_language":  detect( TEXT.text)})
+    return  chain.invoke({"content": TEXT.text})

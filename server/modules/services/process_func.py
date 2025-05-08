@@ -1,4 +1,8 @@
 # import torch
+from modules.services.loader import embedding_model
+from modules.models.user import ProcessedText
+from uuid import uuid4
+from datetime import datetime
 
 # from modules.services.loader import mbart_tokenizer, mbart_model, Bert_tokenizer, Bert_model, envit5_tokenizer, envit5_model,roberta_tokenizer,roberta_model
 # from sklearn.cluster import KMeans
@@ -11,6 +15,12 @@
 # from collections import defaultdict
 # from sklearn.cluster import SpectralClustering
 
+
+def create_processed_text(text: str) -> ProcessedText:
+    return ProcessedText(id=uuid4(),
+                         text=text, 
+                         date=datetime.now(),
+        embedding=embedding_model.embed_documents([text])[0]) # Convert to list for JSON serialization
 
 # def extract_key_sentences(text): 
 #     doc = sentence_tokenizer(text)

@@ -6,6 +6,7 @@ class ProcessedText(BaseModel):
     id: UUID = uuid4()
     text: str
     date: datetime
+    embedding: list[float] 
 
 class User(BaseModel):
     username: str

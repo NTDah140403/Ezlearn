@@ -13,7 +13,8 @@ class TextRequestSummarize(BaseModel):
     ratio: float
 class TextListRequest(BaseModel):
     texts: list
-
+class DocumentInput(BaseModel):
+    content: str
 
 class Question(BaseModel):
     question: str

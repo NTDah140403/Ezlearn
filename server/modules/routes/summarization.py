@@ -9,7 +9,6 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from modules.services.loader import llm
 from modules.schemas.user import TestResponse
-from langdetect import detect
 
 router = APIRouter()
 
@@ -39,6 +38,5 @@ async def summarize(request: TextRequestSummarize):
 
 
     return chain.invoke({"content": request.text,
-                            "ratio":request.ratio,
-                            "output_language":detect( request.text)
+                            "ratio":request.ratio
                             })

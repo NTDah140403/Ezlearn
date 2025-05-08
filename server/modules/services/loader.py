@@ -1,8 +1,11 @@
-import spacy
+# import spacy
 import pkg_resources
-from langchain_groq import ChatGroq
+# from langchain_groq import ChatGroq
 from transformers import AutoTokenizer,AutoModel,AutoModelForSeq2SeqLM,pipeline,RobertaForQuestionAnswering,RobertaTokenizer,pipeline
-from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
+# from langchain_openai  import OpenAI
+from config import settings
+from langchain_google_genai import GoogleGenerativeAI
 
 # from modules.services.seq2mcq_generator import mcq
 
@@ -16,9 +19,9 @@ from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 # phoBert_tokenizer = AutoTokenizer.from_pretrained('vinai/phobert-base',cache_dir=cached_path)
 # phoBert_model = AutoModel.from_pretrained('vinai/phobert-base',cache_dir=cached_path)
 
-phoWhisper_transcriber = pipeline("automatic-speech-recognition", 
-                                  model=pkg_resources.resource_filename('modules', 'pretrain_models/PhoWhisper-small'), 
-                                  device=0)
+# phoWhisper_transcriber = pipeline("automatic-speech-recognition", 
+#                                   model=pkg_resources.resource_filename('modules', 'pretrain_models/PhoWhisper-small'), 
+#                                   device=0)
 # mbart_tokenizer = AutoTokenizer.from_pretrained('facebook/bart-large-cnn',cache_dir=cached_path)
 # mbart_model = AutoModelForSeq2SeqLM.from_pretrained('facebook/bart-large-cnn',cache_dir=cached_path)
 
@@ -32,15 +35,30 @@ phoWhisper_transcriber = pipeline("automatic-speech-recognition",
 
 # mcq_generator = mcq()
 
-llm = ChatGroq(
-    model="Llama3-8b-8192",
-    api_key="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",
-    temperature=0.6,
+# llm = ChatGroq(
+#     model="Llama3-8b-8192",
+#     api_key="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",
+#     temperature=0.6,
+#     max_tokens=1000,
+#     timeout=None,
+#     max_retries=2
+# )
+
+
+llm = GoogleGenerativeAI(
+    model="gemini-2.0-flash",
+    api_key=settings.GOOGLE_API_KEY,
+    temperature=0.9,
     max_tokens=1000,
     timeout=None,
     max_retries=2
 )
 
 
-embedding_model = HuggingFaceInferenceAPIEmbeddings(api_key="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", model_name = "sentence-transformers/paraphrase-MiniLM-L6-v2")
+
+
+
+embedding_model = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-l6-v2",
+)
 

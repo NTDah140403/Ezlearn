@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     host: str
     mongo_initdb_root_username: str
     mongo_initdb_root_password: str
+    uri_format: str
+    GEMINI_API_KEY: str
 
     class Config:
         env_file = ".env"

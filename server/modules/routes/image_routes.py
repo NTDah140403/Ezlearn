@@ -1,11 +1,11 @@
 from fastapi import APIRouter, UploadFile, File, Depends,HTTPException
 from modules.core.auth import get_current_user
-from modules.models.user import UserInDB,ProcessedText
+from modules.models.user import UserInDB
 from modules.core.database import users_collection
 from modules.services.ocr import OCRDetector
-from datetime import datetime
+from modules.services.process_func import create_processed_text
+
 import io 
-from uuid import uuid4
 from PIL import Image,ImageOps
 import numpy as np
 router = APIRouter()
@@ -23,7 +23,7 @@ async def detect_text(image: UploadFile = File(...), current_user: UserInDB = De
         _, text_resp = detector.process_image(image)
         
         # Thêm kết quả vào processed_texts của user
-        processed_entry = ProcessedText(id=uuid4(), text=text_resp, date=datetime.now())
+        processed_entry = create_processed_text(text_resp)
         current_user.processed_texts.append(processed_entry)
         
         # Cập nhật thông tin người dùng trong cơ sở dữ liệu
